@@ -11,7 +11,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 app = Flask(__name__)
 
 # ================= CONFIG =================
-TARGET_VISITS = 2000        # 🔥 FIXED VISITS
+TARGET_VISITS = 1000        # 🔥 FIXED VISITS
 MAX_DURATION = 60           # ⏱ seconds safety
 AES_KEY = b'Yg&tc%DEuh6%Zc^8'
 AES_IV = b'6oyZDr22E3ychjM%'
