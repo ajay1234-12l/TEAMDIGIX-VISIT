@@ -62,7 +62,7 @@ async def make_request_async(encrypt, region, token, session):
         elif region in {"BR", "US", "SAC", "NA"}:
             url = "https://client.us.freefiremobile.com/GetPlayerPersonalShow"
         else:
-            url = "https://clientbp.ggblueshark.com/GetPlayerPersonalShow"
+            url = "https://clientbp.ggpolarbear.com/GetPlayerPersonalShow"
 
         edata = bytes.fromhex(encrypt)
         headers = {
