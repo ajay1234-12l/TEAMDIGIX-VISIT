@@ -86,7 +86,7 @@ async def process_account_with_retry(client, index, uid, password, max_retries=2
                     "uid": uid,
                     "password": password,
                     "token": token_data["token"],
-                    "region": token_data.get("notiRegion", "")
+                    "region": token_data.get("region", "")
                 }
         except Exception as e:
             print(f"Attempt {attempt + 1} failed for UID #{index + 1}: {str(e)}")
