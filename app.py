@@ -19,7 +19,7 @@ def load_tokens(region):
             with open("token_ind.json", "r") as f:
                 tokens = json.load(f)
         elif region in {"BR", "US", "SAC", "NA"}:
-            with open("token_br.json", "r") as f:
+            with open("token_sac.json", "r") as f:
                 tokens = json.load(f)
         else:
             with open("token_bd.json", "r") as f:
