@@ -166,7 +166,7 @@ async def generate_tokens_for_region(region):
 
 # --- Run ---
 if __name__ == "__main__":
-    regions = ["IND", "SAC"]
+    regions = ["IND", "SAC", "BD"]
     total_tokens = 0
     
     for region in regions:
