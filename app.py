@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
-import json, os, time, binascii, asyncio
-from datetime import date
+import json, time, binascii, asyncio
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 import aiohttp
@@ -10,26 +9,7 @@ import like_count_pb2
 
 app = Flask(__name__)
 
-# ================= CONFIG =================
-DAILY_LIMIT = 100
-USAGE_FILE = "usage.json"
-
-# ================= USAGE =================
-def load_usage():
-    today = str(date.today())
-    if not os.path.exists(USAGE_FILE):
-        return {"date": today, "count": 0}
-    with open(USAGE_FILE) as f:
-        data = json.load(f)
-    if data.get("date") != today:
-        return {"date": today, "count": 0}
-    return data
-
-def save_usage(data):
-    with open(USAGE_FILE, "w") as f:
-        json.dump(data, f)
-
-# ================= TOKENS =================
+# ================= TOKEN LOADER =================
 def load_tokens(region):
     try:
         if region == "IND":
@@ -38,7 +18,8 @@ def load_tokens(region):
             file = "token_sac.json"
         else:
             file = "token_bd.json"
-        with open(file) as f:
+
+        with open(file, "r") as f:
             return json.load(f)
     except:
         return None
@@ -87,6 +68,7 @@ async def hit(enc_uid, region, token, session):
         ) as r:
             if r.status != 200:
                 return None
+
             raw = await r.read()
             return decode(bytes.fromhex(raw.hex()))
     except:
@@ -117,17 +99,7 @@ async def process(uid, region, tokens):
 # ================= ROUTE =================
 @app.route("/visit")
 def visit():
-    start = time.perf_counter()
-
-    usage = load_usage()
-    if usage["count"] >= DAILY_LIMIT:
-        return jsonify({
-            "error": "Daily limit exceeded",
-            "RequestsToday": f"{usage['count']}/{DAILY_LIMIT}"
-        }), 429
-
-    usage["count"] += 1
-    save_usage(usage)
+    start_time = time.perf_counter()
 
     uid = request.args.get("uid")
     region = request.args.get("region", "").upper()
@@ -139,8 +111,11 @@ def visit():
     if not tokens:
         return jsonify({"error": "Token file missing"}), 500
 
-    success, failed, name, likes = asyncio.run(process(uid, region, tokens))
-    duration = round(time.perf_counter() - start, 2)
+    success, failed, name, likes = asyncio.run(
+        process(uid, region, tokens)
+    )
+
+    duration = round(time.perf_counter() - start_time, 2)
 
     return jsonify({
         "TotalVisits": len(tokens),
@@ -149,8 +124,7 @@ def visit():
         "PlayerNickname": name,
         "UID": int(uid),
         "Likes": likes,
-        "Duration": f"{duration}s",
-        "RequestsToday": f"{usage['count']}/{DAILY_LIMIT}"
+        "Duration": f"{duration}s"
     })
 
 # ================= RUN =================
